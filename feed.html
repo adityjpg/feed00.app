@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FEED — ADITYJPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #080808;
+      --surface: #101010;
+      --border: #1c1c1c;
+      --border-soft: #161616;
+      --text: #e2e2e2;
+      --text-muted: #444;
+      --text-dim: #2a2a2a;
+      --accent: #ff4500;
+      --accent-dim: rgba(255,69,0,0.12);
+    }
+    :root[data-theme="light"] {
+      --bg: #f2f1ed;
+      --surface: #fafaf8;
+      --border: #dddbd5;
+      --border-soft: #e8e6e1;
+      --text: #111;
+      --text-muted: #aaa;
+      --text-dim: #ccc;
+      --accent: #e03d00;
+      --accent-dim: rgba(224,61,0,0.08);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      transition: background 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .brand-title em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .brand-sub {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #lastUpdated {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .refresh-btn.spinning { color: var(--accent); border-color: var(--accent); }
+
+    /* ── DARK/LIGHT TOGGLE ── */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-label {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .toggle-track {
+      width: 34px;
+      height: 18px;
+      background: var(--border);
+      border-radius: 9px;
+      position: relative;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    [data-theme="dark"] .toggle-track { background: var(--accent); }
+
+    .toggle-thumb {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+
+    [data-theme="dark"] .toggle-thumb { transform: translateX(16px); }
+
+    /* ── SOURCE NAV ── */
+    .source-nav {
+      padding: 10px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: var(--bg);
+      position: sticky;
+      top: 57px;
+      z-index: 100;
+    }
+
+    .pill {
+      padding: 3px 11px;
+      border: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: none;
+      transition: all 0.12s;
+      border-radius: 0;
+    }
+
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      padding: 7px 28px;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      gap: 20px;
+      background: var(--bg);
+    }
+
+    .stats-bar span::before {
+      content: '— ';
+      color: var(--text-dim);
+    }
+
+    /* ── MAIN FEED ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 28px 64px;
+    }
+
+    /* ── SOURCE GROUP ── */
+    .source-group {
+      padding: 28px 0 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .source-group:last-child { border-bottom: none; }
+
+    .source-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .source-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 2.5px;
+      color: var(--accent);
+    }
+
+    .source-meta {
+      font-size: 9px;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .error-badge {
+      font-size: 9px;
+      color: #e05555;
+      border: 1px solid rgba(224,85,85,0.3);
+      padding: 1px 6px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── ARTICLE ITEM ── */
+    .article-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 20px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .article-link {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 300;
+      flex: 1;
+      line-height: 1.45;
+      transition: color 0.1s;
+    }
+
+    .article-link:hover { color: var(--accent); }
+
+    .article-time {
+      font-size: 9.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+
+    /* ── LOADING STATE ── */
+    .loading-state {
+      padding: 64px 0;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    .loading-text {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── EMPTY / NO ARTICLES ── */
+    .no-articles {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 6px 0 16px;
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border-soft);
+      margin-top: 24px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 12px 16px; }
+      .source-nav { padding: 10px 16px; top: 53px; }
+      .stats-bar { padding: 7px 16px; }
+      main { padding: 0 16px 48px; }
+      .article-item { flex-direction: column; gap: 3px; }
+      .article-time { font-size: 9px; }
+      .brand-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-title">FEED<em>.</em></div>
+      <div class="brand-sub">ADITYJPG</div>
+    </div>
+    <div class="header-right">
+      <span id="lastUpdated">—</span>
+      <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+      <div class="toggle-wrap" id="themeToggle" title="Toggle dark/light mode">
+        <span class="toggle-label" id="toggleLabel">Dark</span>
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="source-nav" id="sourceNav">
+    <button class="pill active" data-source="all">All</button>
+  </nav>
+
+  <div class="stats-bar" id="statsBar">
+    <span>Loading</span>
+  </div>
+
+  <main id="feedMain">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <span class="loading-text">Fetching headlines</span>
+    </div>
+  </main>
+
+  <footer>ADITYJPG Feed &mdash; Last 24 Hours &mdash; Auto-refresh every 15 min</footer>
+
+  <script>
+    const FEEDS = [
+      { name: 'The Register', url: 'https://www.theregister.com/headlines.atom' },
+      { name: 'Wired',        url: 'https://www.wired.com/feed/rss' },
+      { name: 'Slashdot',     url: 'https://rss.slashdot.org/Slashdot/slashdot' },
+      { name: 'GSMArena',     url: 'https://www.gsmarena.com/rss-news-reviews.php3' },
+      { name: 'MacRumors',    url: 'https://feeds.macrumors.com/MacRumors-All' },
+      { name: 'The Verge',    url: 'https://www.theverge.com/rss/index.xml' },
+    ];
+
+    const PROXY = 'https://api.allorigins.win/raw?url=';
+    const NOW_FN = () => new Date();
+    const MS_24H = 86400000;
+
+    let allGroups  = [];
+    let activeSource = 'all';
+
+    // ── Theme ──────────────────────────────────────
+    const htmlEl     = document.documentElement;
+    const themeWrap  = document.getElementById('themeToggle');
+    const toggleLbl  = document.getElementById('toggleLabel');
+
+    function setTheme(dark) {
+      htmlEl.setAttribute('data-theme', dark ? 'dark' : 'light');
+      toggleLbl.textContent = dark ? 'Dark' : 'Light';
+    }
+
+    setTheme(true); // default: dark
+    themeWrap.addEventListener('click', () => {
+      setTheme(htmlEl.getAttribute('data-theme') === 'light');
+    });
+
+    // ── Helpers ────────────────────────────────────
+    function timeAgo(dateStr) {
+      const diff = NOW_FN() - new Date(dateStr);
+      const m = Math.floor(diff / 60000);
+      const h = Math.floor(diff / 3600000);
+      if (m < 1)  return 'just now';
+      if (m < 60) return `${m}m ago`;
+      if (h < 24) return `${h}h ago`;
+      return `${Math.floor(h / 24)}d ago`;
+    }
+
+    function within24h(dateStr) {
+      return (NOW_FN() - new Date(dateStr)) < MS_24H;
+    }
+
+    // ── Parse XML (handles RSS 2.0 + Atom) ─────────
+    function parseXML(xmlText, feedName) {
+      const parser = new DOMParser();
+      const doc    = parser.parseFromString(xmlText, 'text/xml');
+      const items  = [];
+
+      // Atom: <entry>
+      const entries = doc.querySelectorAll('entry');
+      if (entries.length) {
+        entries.forEach(e => {
+          const title   = e.querySelector('title')?.textContent?.trim() || '(no title)';
+          const linkEl  = e.querySelector('link[rel="alternate"], link');
+          const link    = linkEl?.getAttribute('href') || linkEl?.textContent?.trim() || '#';
+          const updated = e.querySelector('updated')?.textContent
+                       || e.querySelector('published')?.textContent
+                       || '';
+          items.push({ title, link, pubDate: updated });
+        });
+        return items;
+      }
+
+      // RSS 2.0: <item>
+      doc.querySelectorAll('item').forEach(e => {
+        const title   = e.querySelector('title')?.textContent?.trim() || '(no title)';
+        const link    = e.querySelector('link')?.textContent?.trim()
+                     || e.querySelector('guid')?.textContent?.trim() || '#';
+        const pubDate = e.querySelector('pubDate')?.textContent
+                     || e.querySelector('dc\\:date, date')?.textContent || '';
+        items.push({ title, link, pubDate });
+      });
+
+      return items;
+    }
+
+    // ── Fetch single feed ──────────────────────────
+    async function fetchFeed(feed) {
+      try {
+        const res = await fetch(PROXY + encodeURIComponent(feed.url));
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+
+        const rawItems = parseXML(text, feed.name);
+
+        const items = rawItems
+          .filter(i => i.pubDate && within24h(i.pubDate))
+          .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
+          .map(i => ({
+            title:   i.title
+                       .replace(/&amp;/g,'&').replace(/&lt;/g,'<')
+                       .replace(/&gt;/g,'>').replace(/&#39;/g,"'")
+                       .replace(/&quot;/g,'"').replace(/<[^>]+>/g,'').trim(),
+            link:    i.link,
+            pubDate: i.pubDate,
+          }));
+
+        return { name: feed.name, items, error: null };
+      } catch (err) {
+        return { name: feed.name, items: [], error: 'Could not load' };
+      }
+    }
+
+    // ── Build source nav ───────────────────────────
+    function buildNav(groups) {
+      const nav = document.getElementById('sourceNav');
+      nav.innerHTML = '<button class="pill active" data-source="all">All</button>';
+      groups.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'pill';
+        btn.dataset.source = g.name;
+        btn.textContent = g.name;
+        nav.appendChild(btn);
+      });
+      nav.addEventListener('click', e => {
+        const btn = e.target.closest('.pill');
+        if (!btn) return;
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        activeSource = btn.dataset.source;
+        renderFeed();
+      });
+    }
+
+    // ── Render feed ────────────────────────────────
+    function renderFeed() {
+      const main = document.getElementById('feedMain');
+      const groups = activeSource === 'all'
+        ? allGroups
+        : allGroups.filter(g => g.name === activeSource);
+
+      if (!groups.length) {
+        main.innerHTML = '<div class="loading-state"><span class="loading-text">No sources loaded</span></div>';
+        return;
+      }
+
+      let totalArticles = 0;
+      let html = '';
+
+      groups.forEach(g => {
+        totalArticles += g.items.length;
+        html += `<div class="source-group">
+          <div class="source-header">
+            <span class="source-name">${g.name}</span>
+            <span class="source-meta">${g.items.length} article${g.items.length !== 1 ? 's' : ''} · last 24h</span>
+            ${g.error ? `<span class="error-badge">⚠ ${g.error}</span>` : ''}
+          </div>`;
+
+        if (g.items.length === 0) {
+          html += `<div class="no-articles">No articles in the last 24 hours.</div>`;
+        } else {
+          g.items.forEach(item => {
+            html += `<div class="article-item">
+              <a class="article-link" href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+              <span class="article-time">${timeAgo(item.pubDate)}</span>
+            </div>`;
+          });
+        }
+
+        html += '</div>';
+      });
+
+      main.innerHTML = html;
+
+      document.getElementById('statsBar').innerHTML =
+        `<span>${totalArticles} articles</span><span>${FEEDS.length} sources</span><span>Last 24 hours</span>`;
+    }
+
+    // ── Load all feeds ─────────────────────────────
+    async function loadFeeds() {
+      const main       = document.getElementById('feedMain');
+      const refreshBtn = document.getElementById('refreshBtn');
+
+      main.innerHTML = `<div class="loading-state"><div class="spinner"></div><span class="loading-text">Fetching headlines</span></div>`;
+      refreshBtn.classList.add('spinning');
+      refreshBtn.textContent = '↻ Loading…';
+
+      allGroups = await Promise.all(FEEDS.map(fetchFeed));
+
+      buildNav(allGroups);
+
+      // Re-apply active filter (in case it no longer exists after rebuild)
+      const currentPill = document.querySelector(`.pill[data-source="${activeSource}"]`);
+      if (!currentPill) activeSource = 'all';
+      document.querySelectorAll('.pill').forEach(p =>
+        p.classList.toggle('active', p.dataset.source === activeSource)
+      );
+
+      renderFeed();
+
+      const t = NOW_FN().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('lastUpdated').textContent = `Updated ${t}`;
+      refreshBtn.classList.remove('spinning');
+      refreshBtn.textContent = '↻ Refresh';
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadFeeds);
+
+    // Initial load + auto-refresh every 15 min
+    loadFeeds();
+    setInterval(loadFeeds, 15 * 60 * 1000);
+  </script>
+
+</body>
+</html>
